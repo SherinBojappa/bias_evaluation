@@ -1,0 +1,4 @@
+name: venev_bias
+channels:
+  - defaults
+prefix: /mnt/shared_home/smuckati/miniconda3/envs/venev_bias
