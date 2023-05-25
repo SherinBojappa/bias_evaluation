@@ -64,6 +64,10 @@ def main(args):
     if args.pretrained_model is not None:
         model = ARCH_TO_CLASS[args.model_arch].from_pretrained(args.pretrained_model)
         tokenizer = AutoTokenizer.from_pretrained(args.pretrained_model)
+
+        # print the model params
+        print(f"Model size: {sum(p.numel() for p in model.parameters() if p.requires_grad)}")
+
     elif args.checkpoint_path is not None:
         # TODO load model, tokenizer from a checkpoint
         print(f"checkpoint path")
@@ -111,7 +115,6 @@ def main(args):
         if predicted_answer == correct_answer:
             num_correct = num_correct + 1
 
-    import pdb; pdb.set_trace()
     print(f"Accuracy of the model {args.pretrained_model} on the winogender dataset is {num_correct/len(winogender_dataset)}")
 
 
