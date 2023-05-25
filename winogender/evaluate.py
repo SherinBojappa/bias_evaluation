@@ -46,6 +46,7 @@ def parse_arguments():
 
 
 def main(args):
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # load the windogender data
     # row 0 - sentid	sentence
     # row 1 - row 720 - actual sentences
@@ -62,7 +63,7 @@ def main(args):
 
     # load the pre-trained model and tokenizer
     if args.pretrained_model is not None:
-        model = ARCH_TO_CLASS[args.model_arch].from_pretrained(args.pretrained_model)
+        model = ARCH_TO_CLASS[args.model_arch].from_pretrained(args.pretrained_model).to(device)
         tokenizer = AutoTokenizer.from_pretrained(args.pretrained_model)
 
         # print the model params
@@ -94,12 +95,12 @@ def main(args):
 
         for option in options:
             input_text = context + option
-            input_ids = tokenizer.encode(input_text, return_tensors='pt')
+            input_ids = tokenizer.encode(input_text, return_tensors='pt').to(device)
             with torch.no_grad():
                 outputs = model(input_ids)
                 logits = outputs.logits
                 probs = logits.softmax(dim=-1)
-                option_ids = tokenizer.encode(option, return_tensors='pt')[0].tolist()
+                option_ids = tokenizer.encode(option, return_tensors='pt').to(device)[0].tolist()
                 option_len = len(option_ids)
                 # take care of multi-tokens
                 seq_len = probs.shape[1]
