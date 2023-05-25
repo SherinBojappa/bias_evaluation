@@ -80,10 +80,9 @@ def main(args):
     num_correct = 0
 
     for example in tqdm.tqdm(winogender_dataset):
-        for word in example['sentence'].split(" "):
-            if word in pronouns:
-                pronoun = word
-                break
+        sentence_split = example['sentence'].split(" ")
+        pronoun = next((word for word in sentence_split if word in pronouns), None)
+        assert pronoun != None, f"pronoun not found in the sentence {example['sentence']}"
         context = f"{example['sentence']} \"{pronoun}\" refers to:"
         # sentid example - administrator.someone.1.male.txt
         sentid_list = example['sentid'].split('.')
@@ -113,8 +112,7 @@ def main(args):
         else:
             predicted_answer = 1
 
-        if predicted_answer == correct_answer:
-            num_correct = num_correct + 1
+        num_correct += (predicted_answer == correct_answer)
 
     print(f"Accuracy of the model {args.pretrained_model} on the winogender dataset is {num_correct/len(winogender_dataset)}")
 
