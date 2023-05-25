@@ -2,6 +2,7 @@ import sys
 import argparse
 import os
 import torch
+import tqdm
 import numpy as np
 
 from transformers import AutoTokenizer, AutoModelForMaskedLM, AutoModelForCausalLM, T5ForConditionalGeneration
@@ -73,7 +74,7 @@ def main(args):
     pronouns = ['he', 'she', 'they', 'her', 'him', 'his', 'them', 'their']
     num_correct = 0
 
-    for example in winogender_dataset:
+    for example in tqdm.tqdm(winogender_dataset):
         for word in example['sentence'].split(" "):
             if word in pronouns:
                 pronoun = word
@@ -110,7 +111,8 @@ def main(args):
         if predicted_answer == correct_answer:
             num_correct = num_correct + 1
 
-    print("Accuracy of the model {args.model_name} on the winogender dataset is {num_correct/len(winogender_dataset)}")
+    import pdb; pdb.set_trace()
+    print(f"Accuracy of the model {args.pretrained_model} on the winogender dataset is {num_correct/len(winogender_dataset)}")
 
 
 if __name__ == "__main__":
