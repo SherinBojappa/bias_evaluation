@@ -10,5 +10,5 @@ python3 evaluate.py \
   --model_arch decoder \
   --pretrained_model gpt2 \
   --dataset_path data/all_sentences.tsv \
-  --output_file gpt2_winogender.csv ```
+  --output_file gpt2_winogender.csv
 
