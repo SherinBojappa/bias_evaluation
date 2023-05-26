@@ -5,7 +5,10 @@ The following instructions will guide you through running evaluations on the Cro
 ```bash
 # Navigate to the crows-pairs directory and run the evaluation
 cd crows-pairs
-python3 metric.py --input_file data/crows_pairs_anonymized.csv --lm_model bert --output_file bert_crowspairs
+python3 metric.py \
+  --input_file data/crows_pairs_anonymized.csv \
+  --lm_model bert \
+  --output_file bert_crowspairs
 
 # Navigate to the winogender directory and run its evaluation
 cd winogender
