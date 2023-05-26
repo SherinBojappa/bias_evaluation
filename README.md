@@ -1,7 +1,5 @@
 # bias_evaluation
 
-## Github repository for bias evaluation on standard bias datasets.
-
 The following instructions will guide you through running evaluations on the Crows-Pairs and Winogender Schemas datasets.
 
 ```bash
