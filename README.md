@@ -7,8 +7,8 @@ The following instructions will guide you through running evaluations on the Cro
 cd crows-pairs
 python3 metric.py --input_file data/crows_pairs_anonymized.csv --lm_model bert --output_file bert_crowspairs
 
-# Now navigate to the winogender directory and run its evaluation
-cd ../winogender
+# Navigate to the winogender directory and run its evaluation
+cd winogender
 python3 evaluate.py \
   --model_arch decoder \
   --pretrained_model gpt2 \
