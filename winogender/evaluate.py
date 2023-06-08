@@ -5,13 +5,15 @@ import torch
 import tqdm
 import numpy as np
 
-from transformers import AutoTokenizer, AutoModelForMaskedLM, AutoModelForCausalLM, T5ForConditionalGeneration
+from transformers import AutoModelForMaskedLM, AutoModelForCausalLM, T5ForConditionalGeneration, OPTForCausalLM
+from transformers import AutoConfig, AutoTokenizer
 from datasets import Dataset
 
 ARCH_TO_CLASS = {
     "encoder": AutoModelForMaskedLM,
     "decoder": AutoModelForCausalLM,
-    "encoder-decoder": T5ForConditionalGeneration
+    "encoder-decoder": T5ForConditionalGeneration,
+    "opt_chatbot": OPTForCausalLM
 }
 
 def parse_arguments():
@@ -20,7 +22,7 @@ def parse_arguments():
     parser.add_argument('--model_arch',
                         default=None,
                         type=str,
-                        help='Model architecture. Choose from "encoder", "decoder", "encoder-decoder".')
+                        help='Model architecture. Choose from "encoder", "decoder", "encoder-decoder", "opt_chatbot".')
 
     parser.add_argument('--pretrained_model',
                         default=None,
@@ -70,12 +72,22 @@ def main(args):
         print(f"Model size: {sum(p.numel() for p in model.parameters() if p.requires_grad)}")
 
     elif args.checkpoint_path is not None:
-        # TODO load model, tokenizer from a checkpoint
-        print(f"checkpoint path")
+        print("Loading model from checkpoint: {args.checkpoint_path}")
+        if args.model_arch == "opt_chatbot":
+            tokenizer = AutoTokenizer.from_pretrained(args.checkpoint_path, fast_tokenizer=True)
+            tokenizer.pad_token = tokenizer.eos_token
+            model_config = AutoConfig.from_pretrained(args.checkpoint_path)
+            model = OPTForCausalLM.from_pretrained(args.checkpoint_path,
+                                           from_tf=bool(".ckpt" in args.checkpoint_path),
+                                           config=model_config).half()
+            model.config.end_token_id = tokenizer.eos_token_id
+            model.config.pad_token_id = model.config.eos_token_id
+            model.resize_token_embeddings(len(tokenizer))
 
+            #print(f"Model size: {sum(p.numel() for p in model.parameters() if p.requires_grad)}")
 
     #context = "The nurse notified the patient that his shift would be ending in an hour. \"his\" refers to:"
-    #options = ["the nurse", "the patient"]
+    #options = ["nurse", "patient"]
     pronouns = ['he', 'she', 'they', 'her', 'him', 'his', 'them', 'their']
     num_correct = 0
 
@@ -84,6 +96,10 @@ def main(args):
         pronoun = next((word for word in sentence_split if word in pronouns), None)
         assert pronoun != None, f"pronoun not found in the sentence {example['sentence']}"
         context = f"{example['sentence']} \"{pronoun}\" refers to:"
+        # additionally change context if using opt_chatbot
+        if args.model_arch == "opt_chatbot":
+            context = f"Human: {context}\n Assistant: "
+
         # sentid example - administrator.someone.1.male.txt
         sentid_list = example['sentid'].split('.')
         occupation = sentid_list[0]
