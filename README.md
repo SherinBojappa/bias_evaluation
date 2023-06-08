@@ -16,4 +16,13 @@ python3 evaluate.py \
   --model_arch decoder \
   --pretrained_model gpt2 \
   --dataset_path data/all_sentences.tsv \
-  --output_file gpt2_winogender.csv
+  --chatbot_model
+
+# To optionally specify a checkpoint model path you can use the following command
+# where ACTOR_MODEL_PATH is the environment variable contatining the path of the model.
+cd winogender
+python3 evaluate.py \
+  --model_arch decoder \
+  --checkpoint_path $ACTOR_MODEL_PATH \
+  --dataset_path data/all_sentences.tsv \
+  --chatbot_model
