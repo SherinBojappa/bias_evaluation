@@ -12,8 +12,7 @@ from datasets import Dataset
 ARCH_TO_CLASS = {
     "encoder": AutoModelForMaskedLM,
     "decoder": AutoModelForCausalLM,
-    "encoder-decoder": T5ForConditionalGeneration,
-    "opt_chatbot": OPTForCausalLM
+    "encoder-decoder": T5ForConditionalGeneration
 }
 
 def parse_arguments():
@@ -22,7 +21,7 @@ def parse_arguments():
     parser.add_argument('--model_arch',
                         default=None,
                         type=str,
-                        help='Model architecture. Choose from "encoder", "decoder", "encoder-decoder", "opt_chatbot".')
+                        help='Model architecture. Choose from "encoder", "decoder", "encoder-decoder"')
 
     parser.add_argument('--pretrained_model',
                         default=None,
@@ -139,7 +138,7 @@ def main(args):
 
         num_correct += (predicted_answer == correct_answer)
 
-    print(f"Accuracy of the model on the winogender dataset is {num_correct/len(winogender_dataset)}")
+    print(f"Accuracy of the model on the winogender dataset is {num_correct/len(winogender_dataset):.2f}")
 
 
 if __name__ == "__main__":
